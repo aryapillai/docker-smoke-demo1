@@ -26,7 +26,7 @@ pipeline {
 
                     docker run -d \
                         --name smoke-test \
-                        -p 8080:80 \
+                        -p 8084:80 \
                         smoke-demo
                 '''
             }
