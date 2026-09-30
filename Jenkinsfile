@@ -37,7 +37,7 @@ pipeline {
                 sh '''
                     sleep 5
 
-                    curl -f http://localhost:8080
+                    curl -f http://localhost:8084
                 '''
             }
         }
