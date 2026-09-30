@@ -1,14 +1,13 @@
 pipeline {
 
     agent any
-     environment { 
-	AWS_REGION = "us-east-2" 
-	AWS_ACCOUNT_ID = "794248399805" 
-	ECR_REPOSITORY = "smoke-demo" 
-	IMAGE_URI = 
-	"${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${E
-	CR_REPOSITORY}:latest" 
-}			
+
+    environment {
+        AWS_REGION = "us-east-2"
+        AWS_ACCOUNT_ID = "794248399805"
+        ECR_REPOSITORY = "smoke-demo"
+        IMAGE_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:latest"
+    }
 
     stages {
 
@@ -44,37 +43,38 @@ pipeline {
             steps {
                 sh '''
                     sleep 5
-
                     curl -f http://localhost:8084
                 '''
             }
         }
-	stage('Login to Amazon ECR') {
-		steps {
-                  sh '''
-                   aws ecr get-login-password --region $AWS_REGION | \
-                   docker login \
-                   --username AWS \
-                   --password-stdin \
-                   $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-        '''
-    }
-}
-stage('Tag Docker Image') {
-    steps {
-        sh '''
-            docker tag smoke-demo:latest $IMAGE_URI
-        '''
-    }
-}
-stage('Push Docker Image') {
-    steps {
-        sh '''
-            docker push $IMAGE_URI
-        '''
-    }
-}
 
+        stage('Login to Amazon ECR') {
+            steps {
+                sh '''
+                    aws ecr get-login-password --region $AWS_REGION | \
+                    docker login \
+                        --username AWS \
+                        --password-stdin \
+                        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+                '''
+            }
+        }
+
+        stage('Tag Docker Image') {
+            steps {
+                sh '''
+                    docker tag smoke-demo:latest $IMAGE_URI
+                '''
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                sh '''
+                    docker push $IMAGE_URI
+                '''
+            }
+        }
     }
 
     post {
